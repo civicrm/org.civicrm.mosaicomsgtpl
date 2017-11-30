@@ -1,5 +1,5 @@
 Package: org.civicrm.mosaicomsgtpl
-Copyright (C) 2017, Tim Otten <totten@civicrm.org>
+Copyright (C) 2017, CiviCRM LLC <info@civicrm.org>
 Licensed under the GNU Affero Public License 3.0 (below).
 
 -------------------------------------------------------------------------------
