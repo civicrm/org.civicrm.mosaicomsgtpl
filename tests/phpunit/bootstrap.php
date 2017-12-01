@@ -2,6 +2,9 @@
 
 ini_set('memory_limit', '2G');
 ini_set('safe_mode', 0);
+define('CIVICRM_TEST', 1);
+global $civicrm_setting;
+$civicrm_setting['domain']['mosaicomsgtpl_suspend'] = 1;
 eval(cv('php:boot --level=classloader', 'phpcode'));
 
 // Allow autoloading of PHPUnit helper classes in this extension.

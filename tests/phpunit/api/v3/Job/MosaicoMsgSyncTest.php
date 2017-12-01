@@ -3,6 +3,7 @@
 use Civi\Test\HeadlessInterface;
 use Civi\Test\HookInterface;
 use Civi\Test\TransactionalInterface;
+use CRM_Mosaicomsgtpl_ExtensionUtil as E;
 
 /**
  * Job.mosaico_msg_sync API Test Case
@@ -17,8 +18,7 @@ class api_v3_Job_MosaicoMsgSyncTest extends \PHPUnit_Framework_TestCase implemen
    */
   public function setUpHeadless() {
     return \Civi\Test::headless()
-      ->installMe(__DIR__)
-      ->install(array('uk.co.vedaconsulting.mosaico'))
+      ->install(array('uk.co.vedaconsulting.mosaico', 'org.civicrm.mosaicomsgtpl'))
       ->apply();
   }
 
@@ -41,6 +41,8 @@ class api_v3_Job_MosaicoMsgSyncTest extends \PHPUnit_Framework_TestCase implemen
    * Synchronize all msg templates.
    */
   public function testUpdateAll() {
+    $this->assertEquals('MosaicoTemplate', CRM_Core_DAO_AllCoreTables::getBriefName('CRM_Mosaico_DAO_MosaicoTemplate'));
+
     $myHtml = '<p>placeholder</p>';
     $first = $this->createMosaicoTemplate(array('title' => 'First example', 'html' => $myHtml));
     $second = $this->createMosaicoTemplate(array('title' => 'Second example', 'html' => $myHtml));
@@ -68,6 +70,8 @@ class api_v3_Job_MosaicoMsgSyncTest extends \PHPUnit_Framework_TestCase implemen
    * Synchronize one msg templates.
    */
   public function testUpdateOne() {
+    $this->assertEquals('MosaicoTemplate', CRM_Core_DAO_AllCoreTables::getBriefName('CRM_Mosaico_DAO_MosaicoTemplate'));
+
     $first = $this->createMosaicoTemplate(array('title' => 'First example'));
     $second = $this->createMosaicoTemplate(array('title' => 'Second example'));
 
