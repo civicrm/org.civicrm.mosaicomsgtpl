@@ -11,11 +11,11 @@
   <urls>
     <url desc="Main Extension Page">https://github.com/civicrm/org.civicrm.mosaicomsgtpl</url>
     <url desc="Documentation">https://github.com/civicrm/org.civicrm.mosaicomsgtpl</url>
-    <url desc="Support">https://github.com/civicrm/org.civicrm.mosaicomsgtpl</url>
+    <url desc="Support">http://civicrm.stackexchange.com/</url>
     <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
   <releaseDate>2017-11-30</releaseDate>
-  <version>0.1</version>
+  <version>0.1-alpha1</version>
   <develStage>alpha</develStage>
   <compatibility>
     <ver>4.7</ver>
@@ -23,7 +23,7 @@
   <requires>
     <ext>uk.co.vedaconsulting.mosaico</ext>
   </requires>
-  <comments>This is a new, undeveloped module</comments>
+  <comments></comments>
   <civix>
     <namespace>CRM/Mosaicomsgtpl</namespace>
   </civix>
