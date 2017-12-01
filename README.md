@@ -19,7 +19,7 @@ The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
 * PHP v5.4+
 * CiviCRM 4.7.28+ (recommended)
-* CiviCRM-Mosaico v2.0+
+* CiviCRM-Mosaico v2.0-beta3
 
 ## Installation
 
