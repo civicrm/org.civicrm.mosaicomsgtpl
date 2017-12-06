@@ -1,6 +1,6 @@
 # org.civicrm.mosaicomsgtpl
 
-> This extension is EXPERIMENTAL and UNUSPPORTED. If you would like to become a maintainer,
+> This extension is EXPERIMENTAL and UNSUPPORTED. If you would like to become a maintainer,
 > please post an issue and mention `totten`.
 
 ![Screenshot](/images/screenshot.png)
