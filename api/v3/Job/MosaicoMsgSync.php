@@ -51,15 +51,11 @@ function civicrm_api3_job_mosaico_msg_sync($params) {
       // cool feature ("Initial welcome email").
       //
       // We allow the Mosaico title to include a subject following the | symbol.
-      list($title, $subject) = preg_split('/\s*[|]\s*/', $existingMosTpl['title']);
-      if (empty($subject)) {
-        // Default to old behaviour.
-        $subject = $title;
-      }
+      preg_match('/^(.+?)\s*[|]\s*(.+)$/', $existingMosTpl['title'], $_);
       $createParams = [
         'msg_html'    => _civicrm_api3_job_mosaico_msg_filter($existingMosTpl['html']),
-        'msg_title'   => $title,
-        'msg_subject' => $subject,
+        'msg_title'   => empty($_[1]) ? $existingMosTpl['title'] : $_[1],
+        'msg_subject' => empty($_[2]) ? $existingMosTpl['title'] : $_[2], // default to title, as before.
       ];
 
       // When a template is created from a Mosaico Base Template, it will not have a msg_tpl_id.
