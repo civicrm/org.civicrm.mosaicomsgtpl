@@ -10,7 +10,8 @@ function mosaicomsgtpl_civicrm_post($op, $objectName, $objectId, &$objectRef = N
       return;
     }
     civicrm_api3('Job', 'mosaico_msg_sync', array(
-      'id' => $objectId,
+      'id'     => $objectId,
+      'is_new' => ($op === 'create'),
     ));
   }
 }
