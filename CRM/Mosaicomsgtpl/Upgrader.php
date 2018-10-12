@@ -46,6 +46,9 @@ class CRM_Mosaicomsgtpl_Upgrader extends CRM_Mosaicomsgtpl_Upgrader_Base {
    */
   public function enable() {
     // CRM_Core_DAO::executeQuery('UPDATE foo SET is_active = 1 WHERE bar = "whiz"');
+
+    CRM_Core_Invoke::rebuildMenuAndCaches(TRUE);
+
     if (Civi::settings()->get('mosaicomsgtpl_suspend')) {
       return;
     }
