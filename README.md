@@ -1,8 +1,5 @@
 # org.civicrm.mosaicomsgtpl
 
-> This extension is EXPERIMENTAL and UNSUPPORTED. If you would like to become a maintainer,
-> please post an issue and mention `totten`.
-
 ![Screenshot](/images/screenshot.png)
 
 This extension enables you to use [CiviCRM-Mosaico](https://github.com/veda-consulting/uk.co.vedaconsulting.mosaico/)
@@ -19,7 +16,7 @@ The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
 * PHP v5.4+
 * CiviCRM 4.7.28+ (recommended)
-* CiviCRM-Mosaico v2.0-beta3+
+* CiviCRM-Mosaico v2.0-beta3+ ***Note:** You should ensure you are using the official beta3 from https://github.com/veda-consulting/uk.co.vedaconsulting.mosaico - some of the forked beta3 versions do not work with this extension.*
 
 ## Installation
 
