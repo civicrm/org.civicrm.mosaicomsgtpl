@@ -88,6 +88,57 @@ class api_v3_Job_MosaicoMsgSyncTest extends \PHPUnit_Framework_TestCase implemen
     $this->assertEquals(1 + $oldCount, $newCount);
   }
 
+  /**
+   * Test clones work.
+   */
+  public function testClone() {
+    $this->assertEquals('MosaicoTemplate', CRM_Core_DAO_AllCoreTables::getBriefName('CRM_Mosaico_DAO_MosaicoTemplate'));
+
+    // Create the first template and run the sync.
+    $first = $this->createMosaicoTemplate(array('title' => 'First example'));
+    $result = civicrm_api3('Job', 'mosaico_msg_sync', ['id' => $first['id']]);
+    $oldCount = CRM_Core_DAO::singleValueQuery('SELECT count(*) FROM civicrm_msg_template');
+
+    // Create the clone and run the sync on it passing is_new (which is what the post hook does).
+    $second = civicrm_api3('MosaicoTemplate', 'clone', ['id'=>$first['id'], 'title' => 'clone']);
+    $result = civicrm_api3('Job', 'mosaico_msg_sync', ['id' => $second['id'], 'is_new' => TRUE]);
+
+    // Count templates - should be one more.
+    $newCount = CRM_Core_DAO::singleValueQuery('SELECT count(*) FROM civicrm_msg_template');
+    $this->assertEquals(1 + $oldCount, $newCount);
+  }
+
+  /**
+   * Test title/subject parsing.
+   *
+   * @dataProvider titleSubjectParsingProvider
+   */
+  public function testTitleSubjectParsing($input, $title, $subject) {
+    $this->assertEquals('MosaicoTemplate', CRM_Core_DAO_AllCoreTables::getBriefName('CRM_Mosaico_DAO_MosaicoTemplate'));
+
+    $first = $this->createMosaicoTemplate(array('title' => $input));
+    civicrm_api3('Job', 'mosaico_msg_sync', ['id' => $first['id']]);
+
+    // Reload to get the msg_tpl_id.
+    $first = civicrm_api3('MosaicoTemplate', 'getsingle', ['id' => $first['id']]);
+    $this->assertGreaterThan(0, (int) $first['msg_tpl_id']);
+
+    $tpl = civicrm_api3('MessageTemplate', 'getsingle', ['id' => $first['msg_tpl_id']]);
+    $this->assertEquals($title, $tpl['msg_title']);
+    $this->assertEquals($subject, $tpl['msg_subject']);
+  }
+  /**
+   * Data provider
+   */
+  public function titleSubjectParsingProvider() {
+    return [
+      ['input' => 'A simple subject', 'title' => 'A simple subject', 'subject' => 'A simple subject'],
+      ['input' => 'internal title|public subject', 'title' => 'internal title', 'subject' => 'public subject'],
+      ['input' => 'internal title | public subject', 'title' => 'internal title', 'subject' => 'public subject'],
+      ['input' => 'internal title | public subject | with pipe', 'title' => 'internal title', 'subject' => 'public subject | with pipe'],
+    ];
+  }
+
   protected function createMosaicoTemplate($params = array()) {
     $defaults = array(
       'title' => 'The Title',

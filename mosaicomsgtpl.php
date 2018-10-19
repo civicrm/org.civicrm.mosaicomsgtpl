@@ -4,13 +4,14 @@ require_once 'mosaicomsgtpl.civix.php';
 use CRM_Mosaicomsgtpl_ExtensionUtil as E;
 
 
-function mosaico_civicrm_post($op, $objectName, $objectId, &$objectRef = NULL) {
+function mosaicomsgtpl_civicrm_post($op, $objectName, $objectId, &$objectRef = NULL) {
   if (($op === 'create' || $op === 'edit') && $objectName === 'MosaicoTemplate') {
     if (Civi::settings()->get('mosaicomsgtpl_suspend')) {
       return;
     }
     civicrm_api3('Job', 'mosaico_msg_sync', array(
-      'id' => $objectId,
+      'id'     => $objectId,
+      'is_new' => ($op === 'create'),
     ));
   }
 }

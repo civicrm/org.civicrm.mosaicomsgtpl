@@ -10,7 +10,13 @@ use CRM_Mosaicomsgtpl_ExtensionUtil as E;
  * @see http://wiki.civicrm.org/confluence/display/CRMDOC/API+Architecture+Standards
  */
 function _civicrm_api3_job_mosaico_msg_sync_spec(&$spec) {
-  $spec['id']['api.required'] = 0;
+  $spec['id'] = [
+    'description'  => 'If given, only this template is sync-ed, otherwise all Mosaico templates are processed.',
+    'api.required' => 0,
+  ];
+  $spec['is_new'] = [
+    'description' => 'If true, the msg_tpl_id will be set to zero so that using Copy to create a new template does not duplicate the msg_tpl_id.',
+  ];
 }
 
 /**
@@ -34,24 +40,46 @@ function civicrm_api3_job_mosaico_msg_sync($params) {
 
     foreach ($existingMosTpls['values'] as $existingMosTpl) {
 
-      if (isset($existingMosTpl['msg_tpl_id'])) {
-        civicrm_api3('MessageTemplate', 'create', array(
-          'id' => $existingMosTpl['msg_tpl_id'],
-          'msg_html' => _civicrm_api3_job_mosaico_msg_filter($existingMosTpl['html']),
-        ));
+
+      // Handle common parameters for things that can be updated...
+
+      // Split the Mosaico message title into title and subject.
+      //
+      // This is a big ugly, but Mosaico templates do not store a subject.
+      // Being able to edit the subject of a message template is essential, but
+      // being able to administer templates by an internal name is also a very
+      // cool feature ("Initial welcome email").
+      //
+      // We allow the Mosaico title to include a subject following the | symbol.
+      preg_match('/^(.+?)\s*[|]\s*(.+)$/', $existingMosTpl['title'], $_);
+      $createParams = [
+        'msg_html'    => _civicrm_api3_job_mosaico_msg_filter($existingMosTpl['html']),
+        'msg_title'   => empty($_[1]) ? $existingMosTpl['title'] : $_[1],
+        'msg_subject' => empty($_[2]) ? $existingMosTpl['title'] : $_[2], // default to title, as before.
+      ];
+
+      // When a template is created from a Mosaico Base Template, it will not have a msg_tpl_id.
+      // However when a template is created from a Copy of a MosaicoTemplate, it will come in
+      // with the original MosaicoTemplate's msg_tpl_id, which is not what we want. Consult
+      // `is_new` to determine this case (which is set in the post hook if the op was 'create').
+      $isNewTpl = !isset($existingMosTpl['msg_tpl_id']) || !empty($params['is_new']);
+
+      if ($isNewTpl) {
+        // Need to create a new MessageTemplate.
+        $createParams['is_reserved'] = 1;
+        $createParams['msg_tpl_id']  = 0; // We set this later.
       }
       else {
-        $newTpl = array();
-        $newTpl['msg_title'] = $existingMosTpl['title'];
-        $newTpl['msg_subject'] = $existingMosTpl['title'];
-        $newTpl['msg_html'] = _civicrm_api3_job_mosaico_msg_filter($existingMosTpl['html']);
-        $newTpl['is_reserved'] = 1;
+        // Editing an existing MosaicoTemplate.
+        $createParams['id'] = $existingMosTpl['msg_tpl_id'];
+      }
 
-        $newTplResult = civicrm_api3('MessageTemplate', 'create', $newTpl);
+      $result = civicrm_api3('MessageTemplate', 'create', $createParams);
 
+      if ($isNewTpl) {
         // We're likely called after updating a MosaicoTemplate... don't recurse...
         CRM_Core_DAO::executeQuery('UPDATE civicrm_mosaico_template SET msg_tpl_id = %1 WHERE id = %2', array(
-          1 => array($newTplResult['id'], 'Positive'),
+          1 => array($result['id'], 'Positive'),
           2 => array($existingMosTpl['id'], 'Positive'),
         ));
       }
@@ -62,7 +90,6 @@ function civicrm_api3_job_mosaico_msg_sync($params) {
 
   return civicrm_api3_create_success(array('processed' => $count), $params, 'Job', 'mosaico_msg_sync');
 }
-
 /**
  * Filter the HTML content.
  *
