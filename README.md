@@ -62,6 +62,6 @@ System administrators and developers may wish to use the synchronization API:
 ## Known Issues
 
  * Synchronization is one-way. To make changes, you should only use the Mosaico template editor.
- * When you load a Mosaico template into a richtext editor (such as CKEditor or TinyMCE), you should tred carefully: only make small changes to the text. Changing the layout in a substantive way would be difficult.
+ * When you load a Mosaico template into a richtext editor (such as CKEditor or TinyMCE), you should tread carefully: only make small changes to the text. Changing the layout in a substantive way would be difficult.
 * There is a known issue using when using this extension if you have the smarty in email setting turned on. See https://github.com/civicrm/org.civicrm.mosaicomsgtpl/issues/9
 
