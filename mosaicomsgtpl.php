@@ -136,6 +136,35 @@ function mosaicomsgtpl_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _mosaicomsgtpl_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
+/**
+ * Implements hook_civicrm_alterMailContent
+ *
+ * Replaces Mosaico template custom tokens with proper CiviMail tokens.
+ *
+ * Note that this can still result in broken links if the mail is not sent
+ * using CiviMail, but that's a user-error not a coding one. (Anyone can put
+ * the {action.unsubscribeUrl} token in a message template but it's not going
+ * to work since there's nothing to unsubscribe *from*.)
+ *
+ * @see https://github.com/civicrm/org.civicrm.mosaicomsgtpl/issues/6
+ * @see https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_alterMailContent/
+ *
+ * @param Array $content - fields include: html, text, subject, groupName, valueName, messageTemplateID
+ *
+ */
+function mosaicomsgtpl_civicrm_alterMailContent(&$content) {
+
+  if (!empty($content['messageTemplateID'])) {
+    // This mailing was created by a Message Template, so it could have the Mosaico-based custom tokens in it.
+    $replacements = [
+      '[unsubscribe_link]' => '{action.unsubscribeUrl}',
+      '[show_link]'        => '{mailing.viewUrl}',
+    ];
+    $content['html'] = strtr($content['html'], $replacements);
+    $content['text'] = strtr($content['text'], $replacements);
+  }
+
+}
 // --- Functions below this ship commented out. Uncomment as required. ---
 
 /**
