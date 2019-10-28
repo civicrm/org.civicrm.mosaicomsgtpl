@@ -2,7 +2,7 @@
 
 ![Screenshot](/images/screenshot.png)
 
-This extension enables you to use [CiviCRM-Mosaico](https://github.com/veda-consulting/uk.co.vedaconsulting.mosaico/)
+This extension enables you to use [CiviCRM Mosaico](https://github.com/veda-consulting/uk.co.vedaconsulting.mosaico/)
 templates with scheduled reminders, personal messages, etc. It does this by automatically copying each
 template from Mosaico to a CiviCRM "Message Template".
 
@@ -16,7 +16,7 @@ The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
 * PHP v5.4+
 * CiviCRM 4.7.28+ (recommended)
-* CiviCRM-Mosaico v2.0-beta3+ **Note:** *You should ensure you are using the official beta3 from https://github.com/veda-consulting/uk.co.vedaconsulting.mosaico - some of the forked beta3 versions do not work with this extension.*
+* CiviCRM-Mosaico v2 **Note:** *You should ensure you are using the latest stable version of Mosaico.*
 
 ## Installation
 
