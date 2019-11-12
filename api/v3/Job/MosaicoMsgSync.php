@@ -109,6 +109,7 @@ function _civicrm_api3_job_mosaico_msg_filter($html) {
     $html = str_ireplace(array('{literal}<head>', '</head>{/literal}'),
       array('<head>', '</head>'), $html);
   }
-  $html_filter = new CRM_Mosaicomsgtpl_HtmlFilter();
+
+  $html_filter = new CRM_Mosaico_UrlFilter();
   return $html_filter->filterHtml($html);
 }
