@@ -99,16 +99,21 @@ function civicrm_api3_job_mosaico_msg_sync($params) {
  *   Template HTML, as appropriate for MessageTemplates.
  */
 function _civicrm_api3_job_mosaico_msg_filter($html) {
-  if (defined('CIVICRM_MAIL_SMARTY') && CIVICRM_MAIL_SMARTY == 1) {
-    // keep head section in literal to avoid smarty errors. Specially when CIVICRM_MAIL_SMARTY is turned on.
-    $html = str_ireplace(array('<head>', '</head>'),
-      array('{literal}<head>', '</head>{/literal}'), $html);
-  }
-  elseif (defined('CIVICRM_MAIL_SMARTY') && CIVICRM_MAIL_SMARTY == 0) {
-    // get rid of any injected literal tags to avoid them appearing in emails
-    $html = str_ireplace(array('{literal}<head>', '</head>{/literal}'),
-      array('<head>', '</head>'), $html);
-  }
+  // We never want Smarty parsing CSS blocks in <style> elements, so we wrap them in {literal} tags.
+  //
+  // We don't want {literal} coming through *literally* in the case that Smarty
+  // is not running (e.g. CIVICRM_MAIL_SMARTY is 0 and this is a CiviMail
+  // mailing) so we wrap those in HTML comments.
+  $html = preg_replace_callback('@<(/)?style(?:\s[^>]+)?>@i', function($matches) {
+    if (empty($matches[1])) {
+      // Opening <style> element
+      return "<!--{literal}-->$matches[0]";
+    }
+    else {
+      // Closing element.
+      return "$matches[0]<!--{/literal}-->";
+    }
+  }, $html);
 
   $html_filter = new CRM_Mosaico_UrlFilter();
   return $html_filter->filterHtml($html);
