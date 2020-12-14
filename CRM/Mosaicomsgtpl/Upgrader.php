@@ -138,4 +138,13 @@ class CRM_Mosaicomsgtpl_Upgrader extends CRM_Mosaicomsgtpl_Upgrader_Base {
     return TRUE;
   } // */
 
+  /**
+   * Rebuild all templates because we changed the way <style> is handled.
+   */
+  public function upgrade_0001() {
+    $this->ctx->log->info('Rebuild Mosaico Message Templates');
+    civicrm_api3('Job', 'mosaico_msg_sync', []);
+    return TRUE;
+  }
+
 }
