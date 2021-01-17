@@ -18,7 +18,7 @@ class api_v3_Job_MosaicoMsgSyncTest extends \PHPUnit\Framework\TestCase implemen
    */
   public function setUpHeadless() {
     return \Civi\Test::headless()
-      ->install(array('uk.co.vedaconsulting.mosaico', 'org.civicrm.mosaicomsgtpl'))
+      ->install(['org.civicrm.flexmailer', 'uk.co.vedaconsulting.mosaico', 'org.civicrm.mosaicomsgtpl'])
       ->apply();
   }
 
