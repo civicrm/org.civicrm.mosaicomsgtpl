@@ -10,7 +10,7 @@ use CRM_Mosaicomsgtpl_ExtensionUtil as E;
  * This is a generic test class implemented with PHPUnit.
  * @group headless
  */
-class api_v3_Job_MosaicoMsgSyncTest extends \PHPUnit_Framework_TestCase implements HeadlessInterface, HookInterface, TransactionalInterface {
+class api_v3_Job_MosaicoMsgSyncTest extends \PHPUnit\Framework\TestCase implements HeadlessInterface, HookInterface, TransactionalInterface {
 
   /**
    * Civi\Test has many helpers, like install(), uninstall(), sql(), and sqlFile().
