@@ -1,9 +1,14 @@
 <?php
 
 require_once 'mosaicomsgtpl.civix.php';
+
 use CRM_Mosaicomsgtpl_ExtensionUtil as E;
 
-
+/**
+ * Implements hook_civicrm_post()
+ *
+ * This function is used to keep mosaico template and message template in sync
+ */
 function mosaicomsgtpl_civicrm_post($op, $objectName, $objectId, &$objectRef = NULL) {
   if (($op === 'create' || $op === 'edit') && $objectName === 'MosaicoTemplate') {
     if (Civi::settings()->get('mosaicomsgtpl_suspend')) {
@@ -13,6 +18,31 @@ function mosaicomsgtpl_civicrm_post($op, $objectName, $objectId, &$objectRef = N
       'id'     => $objectId,
       'is_new' => ($op === 'create'),
     ));
+  }
+}
+
+/**
+ * Implements hook_civicrm_pre()
+ *
+ * This function is used to delete message template when a corresponding mosico template in deleted
+ */
+function mosaicomsgtpl_civicrm_pre($op, $objectName, $objectId, &$objectRef = NULL) {
+  if ($objectName === 'MosaicoTemplate' && $op === 'delete') {
+    if (Civi::settings()->get('mosaicomsgtpl_suspend')) {
+      return;
+    }
+
+    // get the message_template_id
+    $result = civicrm_api3('MosaicoTemplate', 'get', [
+      'sequential' => 1,
+      'return' => ["msg_tpl_id"],
+      'id' => $objectId,
+    ]);
+
+    // delete message template
+    civicrm_api3('MessageTemplate', 'delete', [
+      'id' => $result['values'][0]['msg_tpl_id'],
+    ]);
   }
 }
 
@@ -163,7 +193,6 @@ function mosaicomsgtpl_civicrm_alterMailContent(&$content) {
     $content['html'] = strtr($content['html'], $replacements);
     $content['text'] = strtr($content['text'], $replacements);
   }
-
 }
 // --- Functions below this ship commented out. Uncomment as required. ---
 
