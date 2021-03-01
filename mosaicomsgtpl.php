@@ -39,10 +39,12 @@ function mosaicomsgtpl_civicrm_pre($op, $objectName, $objectId, &$objectRef = NU
       'id' => $objectId,
     ]);
 
-    // delete message template
-    civicrm_api3('MessageTemplate', 'delete', [
-      'id' => $result['values'][0]['msg_tpl_id'],
-    ]);
+    // delete associated message template only if it exists
+    if (!empty($result['values'][0]['msg_tpl_id'])) {
+      civicrm_api3('MessageTemplate', 'delete', [
+        'id' => $result['values'][0]['msg_tpl_id'],
+      ]);
+    }
   }
 }
 
