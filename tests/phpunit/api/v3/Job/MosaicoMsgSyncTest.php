@@ -123,8 +123,17 @@ class api_v3_Job_MosaicoMsgSyncTest extends \PHPUnit\Framework\TestCase implemen
     civicrm_api3('MosaicoTemplate', 'delete', array('id' => $first['id']));
 
     // make sure message template is deleted
-    $result = civicrm_api3('MessageTemplate', 'getsingle', ['id' => $first['msg_tpl_id']]);
-    $this->assertEquals($result['count'], 0);
+    $message = NULL;
+    try {
+      // A significant number of times this will fail if there are no message templates matching the criteria with a `CiviCRM_API3_EXCEPTION`.
+      $result = civicrm_api3('MessageTemplate', 'getsingle', ['id' => $first['msg_tpl_id']]);
+      $this->assertEquals($result['count'], 0);
+    }
+    catch (CiviCRM_API3_Exception $e) {
+      $message = $e->getMessage();
+    }
+    // If this exception is returned it means Civi cannot find a MessageTemplate matching the criteria - this is what we want/expect.
+    $this->assertContains('Expected one MessageTemplate but found 0', $message);
   }
 
   /**
