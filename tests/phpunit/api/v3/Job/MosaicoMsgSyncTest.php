@@ -100,12 +100,40 @@ class api_v3_Job_MosaicoMsgSyncTest extends \PHPUnit\Framework\TestCase implemen
     $oldCount = CRM_Core_DAO::singleValueQuery('SELECT count(*) FROM civicrm_msg_template');
 
     // Create the clone and run the sync on it passing is_new (which is what the post hook does).
-    $second = civicrm_api3('MosaicoTemplate', 'clone', ['id'=>$first['id'], 'title' => 'clone']);
+    $second = civicrm_api3('MosaicoTemplate', 'clone', ['id' => $first['id'], 'title' => 'clone']);
     $result = civicrm_api3('Job', 'mosaico_msg_sync', ['id' => $second['id'], 'is_new' => TRUE]);
 
     // Count templates - should be one more.
     $newCount = CRM_Core_DAO::singleValueQuery('SELECT count(*) FROM civicrm_msg_template');
     $this->assertEquals(1 + $oldCount, $newCount);
+  }
+
+
+  /**
+   * Test deletion of message template corresponding to masaico template
+   */
+  public function testDelete() {
+    $this->assertEquals('MosaicoTemplate', CRM_Core_DAO_AllCoreTables::getBriefName('CRM_Mosaico_DAO_MosaicoTemplate'));
+
+    // Create the first template and run the sync.
+    $first = $this->createMosaicoTemplate(array('title' => 'First example'));
+    civicrm_api3('Job', 'mosaico_msg_sync', ['id' => $first['id']]);
+
+    // Delete mosaico template
+    civicrm_api3('MosaicoTemplate', 'delete', array('id' => $first['id']));
+
+    // make sure message template is deleted
+    $message = NULL;
+    try {
+      // A significant number of times this will fail if there are no message templates matching the criteria with a `CiviCRM_API3_EXCEPTION`.
+      $result = civicrm_api3('MessageTemplate', 'getsingle', ['id' => $first['msg_tpl_id']]);
+      $this->assertEquals($result['count'], 0);
+    }
+    catch (CiviCRM_API3_Exception $e) {
+      $message = $e->getMessage();
+    }
+    // If this exception is returned it means Civi cannot find a MessageTemplate matching the criteria - this is what we want/expect.
+    $this->assertContains('Expected one MessageTemplate but found 0', $message);
   }
 
   /**
@@ -150,5 +178,4 @@ class api_v3_Job_MosaicoMsgSyncTest extends \PHPUnit\Framework\TestCase implemen
     $msgTpl = civicrm_api3('MosaicoTemplate', 'create', array_merge($defaults, $params));
     return $msgTpl['values'][$msgTpl['id']];
   }
-
 }
